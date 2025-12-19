@@ -38,6 +38,7 @@ const varifyToken = async (req, res, next) => {
   }
 };
 
+//fixed code
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rbs3vpy.mongodb.net/?appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
