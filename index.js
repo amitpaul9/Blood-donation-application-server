@@ -54,6 +54,7 @@ async function run() {
   try {
     const bloodDonationApp = client.db("bloodDonationAppCollection");
     const usersCollection = bloodDonationApp.collection("users");
+    const donationRequest = bloodDonationApp.collection("requests");
 
     //user routes
     //post user data
@@ -72,6 +73,32 @@ async function run() {
       } catch (error) {
         console.log(error);
       }
+    });
+
+    //donation request routes
+    app.post("/requests", (req, res) => {
+      try {
+        const newRequest = req.body;
+        const result = donationRequest.insertOne(newRequest);
+        res.send(result);
+      } catch (error) {
+        return res
+          .status(401)
+          .send({ message: "got error posting donation request" });
+      }
+    });
+
+    // get my donation request
+    app.get("/requests", async (req, res) => {
+      const query = {};
+      const email = req.query.requesterEmail;
+      if (email) {
+        query.email = email;
+        console.log("getting email", email);
+      }
+      const cursor = donationRequest.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
     console.log(
