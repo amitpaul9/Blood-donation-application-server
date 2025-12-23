@@ -102,6 +102,12 @@ async function run() {
       }
     });
 
+    app.get("/all-requests", async (req, res) => {
+      const cursor = donationRequest.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     // get my donation request
     app.get("/requests", async (req, res) => {
       const query = {};
@@ -123,7 +129,10 @@ async function run() {
         query.requesterEmail = email;
         console.log("getting email", email);
       }
-      const cursor = donationRequest.find(query).sort({ createdDate: -1 }).limit(3);
+      const cursor = donationRequest
+        .find(query)
+        .sort({ createdDate: -1 })
+        .limit(3);
       const result = await cursor.toArray();
       res.send(result);
     });
