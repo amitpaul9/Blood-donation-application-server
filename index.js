@@ -74,6 +74,7 @@ async function run() {
       }
     });
 
+    //get all users
     app.get("/users", async (req, res) => {
       const cursor = usersCollection.find();
       const result = await cursor.toArray();
@@ -89,7 +90,7 @@ async function run() {
     });
 
     //donation request routes
-    app.post("/requests", varifyToken, (req, res) => {
+    app.post("/requests", (req, res) => {
       try {
         const newRequest = req.body;
         const result = donationRequest.insertOne(newRequest);
@@ -102,17 +103,32 @@ async function run() {
     });
 
     // get my donation request
-    app.get("/requests", varifyToken, async (req, res) => {
+    app.get("/requests", async (req, res) => {
       const query = {};
       const email = req.query.requesterEmail;
       if (email) {
-        query.email = email;
+        query.requesterEmail = email;
         console.log("getting email", email);
       }
       const cursor = donationRequest.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
+
+    // get latest 3 donation request
+    app.get("/requests/recent", async (req, res) => {
+      const query = {};
+      const email = req.query.requesterEmail;
+      if (email) {
+        query.requesterEmail = email;
+        console.log("getting email", email);
+      }
+      const cursor = donationRequest.find(query).sort({ createdDate: -1 }).limit(3);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/requests", async (req, res) => {});
 
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
