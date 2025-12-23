@@ -38,7 +38,6 @@ const varifyToken = async (req, res, next) => {
   }
 };
 
-//fixed code
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rbs3vpy.mongodb.net/?appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -58,7 +57,7 @@ async function run() {
 
     //user routes
     //post user data
-    app.post("/users", varifyToken, async (req, res) => {
+    app.post("/users", async (req, res) => {
       const newUser = req.body;
       const email = req.body.email;
       const query = { email: email };
@@ -75,8 +74,22 @@ async function run() {
       }
     });
 
+    app.get("/users", async (req, res) => {
+      const cursor = usersCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //find user role
+    app.get("/users/role/:email", async (req, res) => {
+      const { email } = req.params;
+      const query = { email: email };
+      const result = await usersCollection.findOne(query);
+      res.send(result);
+    });
+
     //donation request routes
-    app.post("/requests", (req, res) => {
+    app.post("/requests", varifyToken, (req, res) => {
       try {
         const newRequest = req.body;
         const result = donationRequest.insertOne(newRequest);
@@ -89,7 +102,7 @@ async function run() {
     });
 
     // get my donation request
-    app.get("/requests", async (req, res) => {
+    app.get("/requests", varifyToken, async (req, res) => {
       const query = {};
       const email = req.query.requesterEmail;
       if (email) {
