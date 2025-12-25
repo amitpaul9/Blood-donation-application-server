@@ -146,7 +146,31 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/requests", async (req, res) => {});
+    app.delete("/requests/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await donationRequest.deleteOne(query);
+      res.send(result);
+    });
+
+    //patch requests
+    app.patch("/requests/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const updateRequest = req.body;
+
+        const query = { _id: new ObjectId(id) };
+        const updatedRequest = {
+          $set: updateRequest,
+        };
+        const result = await donationRequest.updateOne(query, updatedRequest);
+
+        res.send(result);
+      } catch (error) {
+        console.error("Update error:", error);
+        res.status(500).send({ error: error.message });
+      }
+    });
 
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
