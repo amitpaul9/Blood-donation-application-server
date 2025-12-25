@@ -137,6 +137,15 @@ async function run() {
       res.send(result);
     });
 
+    // get donation req by id
+    app.get("/requests/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await donationRequest.findOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
+    });
+
     app.get("/requests", async (req, res) => {});
 
     console.log(
